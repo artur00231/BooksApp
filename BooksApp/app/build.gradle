@@ -56,4 +56,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     compile 'com.simplecityapps:recyclerview-fastscroll:2.0.1'
+    compile 'com.getbase:floatingactionbutton:1.10.1'
 }
