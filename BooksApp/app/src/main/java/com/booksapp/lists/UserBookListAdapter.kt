@@ -1,5 +1,7 @@
 package com.booksapp.lists
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +14,7 @@ import com.booksapp.data.UserBook
 import com.booksapp.databinding.BookCardBinding
 import com.booksapp.databinding.BookDividerCardBinding
 
-class UserBookListAdapter : RecyclerView.Adapter<UserBookListAdapter.ViewHolder>() {
+class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookListAdapter.ViewHolder>() {
     enum class CardType { BOOK, DIVIDER }
     enum class DataSet { BooksToRead, BooksRead,  BooksCurrentlyRead, Dividers }
 
@@ -55,6 +57,21 @@ class UserBookListAdapter : RecyclerView.Adapter<UserBookListAdapter.ViewHolder>
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val dataSetAndPos = getItemDataSetAndPosition(position)
+
+        val isbn = when (dataSetAndPos.first) {
+            DataSet.Dividers -> null
+            DataSet.BooksToRead -> booksToRead[dataSetAndPos.second].book.ISBN
+            DataSet.BooksRead -> booksRead[dataSetAndPos.second].book.ISBN
+            DataSet.BooksCurrentlyRead -> booksCurrentlyRead[dataSetAndPos.second].book.ISBN
+        }
+
+        if (isbn != null) {
+            (holder as BookListViewHolder).binding.root.setOnClickListener {
+                val intent = Intent(context, UserBookEdit::class.java)
+                intent.putExtra("isbn", isbn)
+                context.startActivity(intent)
+            }
+        }
 
         when (dataSetAndPos.first) {
             DataSet.BooksToRead -> {

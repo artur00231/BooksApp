@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".lists.UserBookEdit">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/edit_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="List" />
+
+            <RadioGroup
+                android:id="@+id/edit_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RadioButton
+                    android:id="@+id/list_none"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="None" />
+
+                <RadioButton
+                    android:id="@+id/list_to_read"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="To Read" />
+
+                <RadioButton
+                    android:id="@+id/list_reading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Reading" />
+
+                <RadioButton
+                    android:id="@+id/list_finished"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Finished" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rating" />
+
+            <RatingBar
+                android:id="@+id/edit_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Review" />
+
+            <EditText
+                android:id="@+id/edit_review"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:gravity="start|top"
+                android:inputType="textMultiLine" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="confirm"
+                android:text="Confirm" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

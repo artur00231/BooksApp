@@ -28,7 +28,7 @@ class UserBookList : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        adapter = UserBookListAdapter()
+        adapter = UserBookListAdapter(requireContext())
     }
 
     override fun onCreateView(
