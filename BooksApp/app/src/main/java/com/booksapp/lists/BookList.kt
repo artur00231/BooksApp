@@ -1,5 +1,6 @@
 package com.booksapp.lists
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -83,6 +84,11 @@ class BookList : Fragment() {
 
         val helper = ItemTouchHelper(callback)
         helper.attachToRecyclerView(binding.bookList)
+
+        binding.addBookButton.setOnClickListener() {
+            var intent = Intent(context, BookAdd::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onResume() {
