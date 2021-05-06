@@ -4,4 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     >
 
+    <item
+        android:id="@+id/action_user_books"
+        android:orderInCategory="200"
+        android:title="Sort"
+        android:icon="@drawable/ic_baseline_book_24"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_all_books"
+        android:orderInCategory="200"
+        android:title="Filter"
+        android:icon="@drawable/ic_baseline_library_books_24"
+        app:showAsAction="ifRoom" />
+
 </menu>
