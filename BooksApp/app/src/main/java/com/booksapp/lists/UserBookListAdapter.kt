@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.booksapp.R
+import com.booksapp.data.Book
+import com.booksapp.data.UserBook
 import com.booksapp.databinding.BookCardBinding
 import com.booksapp.databinding.BookDividerCardBinding
 
@@ -57,15 +59,15 @@ class UserBookListAdapter : RecyclerView.Adapter<UserBookListAdapter.ViewHolder>
         when (dataSetAndPos.first) {
             DataSet.BooksToRead -> {
                 val binding = (holder as BookListViewHolder).binding
-                binding.bookTitle.text = booksToRead[dataSetAndPos.second]
+                binding.bookTitle.text = booksToRead[dataSetAndPos.second].book.title
             }
             DataSet.BooksCurrentlyRead -> {
                 val binding = (holder as BookListViewHolder).binding
-                binding.bookTitle.text = booksCurrentlyRead[dataSetAndPos.second]
+                binding.bookTitle.text = booksCurrentlyRead[dataSetAndPos.second].book.title
             }
             DataSet.BooksRead -> {
                 val binding = (holder as BookListViewHolder).binding
-                binding.bookTitle.text = booksRead[dataSetAndPos.second]
+                binding.bookTitle.text = booksRead[dataSetAndPos.second].book.title
             }
 
             DataSet.Dividers -> {
@@ -108,6 +110,20 @@ class UserBookListAdapter : RecyclerView.Adapter<UserBookListAdapter.ViewHolder>
 
         notifyDataSetChanged()
         dataSetMap = hashMapOf(0 to booksToRead, 1 to booksCurrentlyRead, 2 to booksRead)
+    }
+
+    /**
+     * @return 0 - no action; 1 - only move up; 2 - only move down; 3 - move down or up;
+     */
+    fun getPossibleActions(position: Int): Int {
+        val (type, _) = getItemDataSetAndPosition(position)
+
+        return when (type) {
+            DataSet.BooksToRead -> 2
+            DataSet.BooksCurrentlyRead -> 3
+            DataSet.BooksRead -> 1
+            else -> 0
+        }
     }
 
     private fun getItemDataSetAndPosition(position: Int) : Pair<DataSet, Int> {
@@ -192,13 +208,13 @@ class UserBookListAdapter : RecyclerView.Adapter<UserBookListAdapter.ViewHolder>
         showDataSet[dataSet] = !showDataSet[dataSet]
 
         if (showDataSet[dataSet]) {
-            button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down)
+            button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up)
             notifyItemRangeInserted(getDividerPosition(dataSet) + 1, dataSetMap[dataSet]!!.size)
         } else {
-            button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up)
+            button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down)
             notifyItemRangeRemoved(getDividerPosition(dataSet) + 1, dataSetMap[dataSet]!!.size)
         }
     }
 }
 
-typealias UserBookListDataSet =  MutableList<String>
+typealias UserBookListDataSet =  MutableList<UserBook>

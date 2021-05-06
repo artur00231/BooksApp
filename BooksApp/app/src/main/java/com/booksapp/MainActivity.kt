@@ -14,7 +14,7 @@ import com.booksapp.lists.UserBookList
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private var currentFragment = 0;
+    private lateinit var adapter: PagesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +25,10 @@ class MainActivity : AppCompatActivity() {
         val toolbar = binding.mainToolbar.root
         setSupportActionBar(toolbar)
         toolbar.showOverflowMenu();
+
+        adapter = PagesAdapter(supportFragmentManager, lifecycle)
+        binding.mainPages.adapter = adapter
+        binding.mainPages.isUserInputEnabled = false
     }
 
     public override fun onCreateOptionsMenu(menu : Menu) : Boolean {
@@ -35,20 +39,20 @@ class MainActivity : AppCompatActivity() {
     public override fun onOptionsItemSelected(item : MenuItem) : Boolean {
         when (item.itemId) {
             R.id.action_all_books -> {
-                if (currentFragment == 0) {
+                if (binding.mainPages.currentItem == 1) {
                     return true
                 }
 
-                //TODO implement fragment change
+                binding.mainPages.currentItem = 1
 
                 return true
             }
             R.id.action_user_books -> {
-                if (currentFragment == 1) {
+                if (binding.mainPages.currentItem == 0) {
                     return true
                 }
 
-                //TODO implement fragment change
+                binding.mainPages.currentItem = 0
 
                 return true
             }

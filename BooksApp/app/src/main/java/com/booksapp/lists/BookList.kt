@@ -31,16 +31,6 @@ class BookList : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        GlobalScope.launch {
-            loadBooks()
-            bookList.sortBy { it.title }
-
-            withContext(Dispatchers.Main) {
-                adapter.setData(bookList)
-                applyFilter()
-            }
-        }
     }
 
     override fun onCreateView(
@@ -93,6 +83,20 @@ class BookList : Fragment() {
 
         val helper = ItemTouchHelper(callback)
         helper.attachToRecyclerView(binding.bookList)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        GlobalScope.launch {
+            loadBooks()
+            bookList.sortBy { it.title }
+
+            withContext(Dispatchers.Main) {
+                adapter.setData(bookList)
+                applyFilter()
+            }
+        }
     }
 
     private fun applyFilter() {

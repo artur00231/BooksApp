@@ -5,57 +5,30 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.booksapp.App
+import com.booksapp.data.Book
+import com.booksapp.data.UserBook
 import com.booksapp.databinding.FragmentUserBookListBinding
-/*
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-*/
-/**
- * A simple [Fragment] subclass.
- * Use the [UserBookList.newInstance] factory method to
- * create an instance of this fragment.
- */
-class UserBookList : Fragment() {
-    /*// TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null*/
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+class UserBookList : Fragment() {
     lateinit var binding: FragmentUserBookListBinding
     lateinit var adapter: UserBookListAdapter
 
+    private var books: ArrayList<UserBook> = arrayListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }*/
 
         adapter = UserBookListAdapter()
-
-        //Gen data set 1:
-        val list1 = ArrayList<String>();
-        for (i in 1 .. 10) {
-            list1.add(i.toString())
-        }
-
-        //Gen data set 2:
-        val list2 = ArrayList<String>();
-        for (i in 11 .. 20) {
-            list2.add(i.toString())
-        }
-
-        //Gen data set 3:
-        val list3 = ArrayList<String>();
-        for (i in 21 .. 30) {
-            list3.add(i.toString())
-        }
-
-        adapter.setData(list1, list2, list3)
     }
 
     override fun onCreateView(
@@ -70,23 +43,57 @@ class UserBookList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.bookList.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         binding.bookList.adapter = adapter
+
+        GlobalScope.launch {
+            loadBooks()
+
+            val set1 = ArrayList(books.filter { it.type == 0 })
+            val set2 = ArrayList(books.filter { it.type == 1 })
+            val set3 =  ArrayList(books.filter { it.type == 2 })
+
+            withContext(Dispatchers.Main) {
+                adapter.setData(set1, set2, set3)
+            }
+        }
+
+        val callback = UserBooksItemTouchHelperCallback(requireContext())
+        callback.setOnSwipeListener { viewHolder: RecyclerView.ViewHolder, direction: Int ->
+            if (direction == 4) {
+
+            } else if (direction == 8) {
+
+            }
+
+            adapter.notifyItemChanged(viewHolder.adapterPosition)
+        }
+
+        callback.setIsSwappable {
+            adapter.getPossibleActions(it)
+        }
+        val helper = ItemTouchHelper(callback)
+        helper.attachToRecyclerView(binding.bookList)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment UserBookList.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance() =
-            UserBookList().apply {
-                /*arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }*/
+    override fun onResume() {
+        super.onResume()
+
+        GlobalScope.launch {
+            loadBooks()
+
+            val set1 = ArrayList(books.filter { it.type == 0 })
+            val set2 = ArrayList(books.filter { it.type == 1 })
+            val set3 =  ArrayList(books.filter { it.type == 2 })
+
+            withContext(Dispatchers.Main) {
+                adapter.setData(set1, set2, set3)
             }
+        }
     }
+
+    private fun loadBooks() {
+        val db = (requireContext().applicationContext as App).db!!.bookDao()
+
+        books = ArrayList(db.getAllUserBooks())
+    }
+
 }
