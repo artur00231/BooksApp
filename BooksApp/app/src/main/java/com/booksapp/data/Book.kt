@@ -11,10 +11,12 @@ data class Book(@PrimaryKey(autoGenerate = true) var id: Int?,
                 var date : String,
     )
 
+enum class UserBookType { ToRead, CurrentlyRead, Read }
+
 @Entity
 data class UserBook(@PrimaryKey(autoGenerate = true) var userBook_id: Int?,
                     @Embedded var book : Book,
-                    var type : Int
+                    var type : UserBookType
 )
 
 @Dao
@@ -24,6 +26,9 @@ interface BookDao {
 
     @Query("SELECT * FROM UserBook")
     fun getAllUserBooks(): List<UserBook>
+
+    @Query("SELECT * FROM UserBook ORDER BY title DESC")
+    fun getAllUserBooksSorted(): List<UserBook>
 
     @Query("SELECT * FROM UserBook WHERE type = :type")
     fun getUserBooks(type: Int): List<UserBook>

@@ -10,6 +10,7 @@ import com.booksapp.App
 import com.booksapp.data.Book
 import com.booksapp.data.BookDao
 import com.booksapp.data.UserBook
+import com.booksapp.data.UserBookType
 import com.booksapp.databinding.ActivityUserBookEditBinding
 import kotlinx.coroutines.*
 
@@ -44,9 +45,9 @@ class UserBookEdit : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 if (userBook != null) {
                     when (userBook!!.type) {
-                        0 -> binding.listToRead.isChecked = true
-                        1 -> binding.listReading.isChecked = true
-                        2 -> binding.listFinished.isChecked = true
+                        UserBookType.ToRead -> binding.listToRead.isChecked = true
+                        UserBookType.CurrentlyRead -> binding.listReading.isChecked = true
+                        UserBookType.Read -> binding.listFinished.isChecked = true
                     }
                 }
                 else binding.listNone.isChecked = true
@@ -68,9 +69,9 @@ class UserBookEdit : AppCompatActivity() {
         } else {
             GlobalScope.launch {
                 val type = when (binding.editList.checkedRadioButtonId) {
-                    binding.listToRead.id -> 0
-                    binding.listReading.id -> 1
-                    else -> 2
+                    binding.listToRead.id -> UserBookType.ToRead
+                    binding.listReading.id -> UserBookType.CurrentlyRead
+                    else -> UserBookType.Read
                 }
                 if (userBook == null) {
                     userBook = UserBook(null, book!!, type)

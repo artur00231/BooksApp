@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.booksapp.R
 import com.booksapp.data.Book
 import com.booksapp.data.UserBook
+import com.booksapp.data.UserBookType
 import com.booksapp.databinding.BookCardBinding
 import com.booksapp.databinding.BookDividerCardBinding
 
 class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookListAdapter.ViewHolder>() {
     enum class CardType { BOOK, DIVIDER }
     enum class DataSet { BooksToRead, BooksRead,  BooksCurrentlyRead, Dividers }
+    enum class MoveDirection {Up, Down}
 
     private var booksToRead: UserBookListDataSet = arrayListOf()
     private var booksRead: UserBookListDataSet = arrayListOf()
@@ -136,10 +138,80 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
         val (type, _) = getItemDataSetAndPosition(position)
 
         return when (type) {
-            DataSet.BooksToRead -> 2
+            DataSet.BooksToRead -> 3
             DataSet.BooksCurrentlyRead -> 3
             DataSet.BooksRead -> 1
             else -> 0
+        }
+    }
+
+    fun moveBook(position: Int, direction: MoveDirection) {
+        val (type, pos) = getItemDataSetAndPosition(position)
+
+        if (type == DataSet.BooksToRead && direction == MoveDirection.Up) {
+            val book = booksToRead[pos]
+            booksToRead.removeAt(pos)
+            notifyItemRemoved(position)
+
+            booksCurrentlyRead.add(book)
+            booksCurrentlyRead.sortBy { it.book.title }
+
+            val newPosition = booksCurrentlyRead.indexOf(book)
+            if (showDataSet[1]) {
+                notifyItemInserted(newPosition + getDataSetOffset(DataSet.BooksCurrentlyRead))
+            }
+
+            moveUserBook(book, UserBookType.CurrentlyRead)
+        } else if (type == DataSet.BooksToRead && direction == MoveDirection.Down) {
+            val book = booksToRead[pos]
+            booksToRead.removeAt(pos)
+            notifyItemRemoved(position)
+
+            removeUserBook(book)
+        } else if (type == DataSet.BooksRead && direction == MoveDirection.Down) {
+            val book = booksRead[pos]
+            booksRead.removeAt(pos)
+            notifyItemRemoved(position)
+
+            booksCurrentlyRead.add(book)
+            booksCurrentlyRead.sortBy { it.book.title }
+
+            val newPosition = booksCurrentlyRead.indexOf(book)
+            if (showDataSet[1]) {
+                notifyItemInserted(newPosition + getDataSetOffset(DataSet.BooksCurrentlyRead))
+            }
+
+            moveUserBook(book, UserBookType.CurrentlyRead)
+        } else if (type == DataSet.BooksCurrentlyRead && direction == MoveDirection.Down) {
+            val book = booksCurrentlyRead[pos]
+            booksCurrentlyRead.removeAt(pos)
+            notifyItemRemoved(position)
+
+            booksToRead.add(book)
+            booksToRead.sortBy { it.book.title }
+
+            val newPosition = booksToRead.indexOf(book)
+            if (showDataSet[0]) {
+                notifyItemInserted(newPosition + getDataSetOffset(DataSet.BooksToRead))
+            }
+
+            moveUserBook(book, UserBookType.ToRead)
+        } else if (type == DataSet.BooksCurrentlyRead && direction == MoveDirection.Up) {
+            val book = booksCurrentlyRead[pos]
+            booksCurrentlyRead.removeAt(pos)
+            notifyItemRemoved(position)
+
+            booksRead.add(book)
+            booksRead.sortBy { it.book.title }
+
+            val newPosition = booksRead.indexOf(book)
+            if (showDataSet[2]) {
+                notifyItemInserted(newPosition + getDataSetOffset(DataSet.BooksToRead))
+            }
+
+            moveUserBook(book, UserBookType.Read)
+        } else {
+            notifyItemChanged(position)
         }
     }
 
@@ -231,6 +303,14 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
             button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down)
             notifyItemRangeRemoved(getDividerPosition(dataSet) + 1, dataSetMap[dataSet]!!.size)
         }
+    }
+
+    private fun removeUserBook(userBook: UserBook) {
+
+    }
+
+    private fun moveUserBook(userBook: UserBook, newType : UserBookType) {
+
     }
 }
 

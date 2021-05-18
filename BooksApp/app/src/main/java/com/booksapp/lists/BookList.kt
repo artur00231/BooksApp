@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.booksapp.App
 import com.booksapp.data.Book
 import com.booksapp.data.UserBook
+import com.booksapp.data.UserBookType
 import com.booksapp.databinding.FragmentBookListBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -121,7 +122,7 @@ class BookList : Fragment() {
         val userBook = db.getUserBook(book.id!!)
 
         if (userBook == null) {
-            db.insert(UserBook(null, book, 0))
+            db.insert(UserBook(null, book, UserBookType.ToRead))
             return true
         }
 

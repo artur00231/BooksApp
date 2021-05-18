@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.booksapp.App
 import com.booksapp.data.Book
 import com.booksapp.data.UserBook
+import com.booksapp.data.UserBookType
 import com.booksapp.databinding.FragmentUserBookListBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -47,9 +48,9 @@ class UserBookList : Fragment() {
         GlobalScope.launch {
             loadBooks()
 
-            val set1 = ArrayList(books.filter { it.type == 0 })
-            val set2 = ArrayList(books.filter { it.type == 1 })
-            val set3 =  ArrayList(books.filter { it.type == 2 })
+            val set1 = ArrayList(books.filter { it.type == UserBookType.ToRead })
+            val set2 = ArrayList(books.filter { it.type == UserBookType.CurrentlyRead })
+            val set3 =  ArrayList(books.filter { it.type == UserBookType.Read })
 
             withContext(Dispatchers.Main) {
                 adapter.setData(set1, set2, set3)
@@ -59,12 +60,10 @@ class UserBookList : Fragment() {
         val callback = UserBooksItemTouchHelperCallback(requireContext())
         callback.setOnSwipeListener { viewHolder: RecyclerView.ViewHolder, direction: Int ->
             if (direction == 4) {
-
+                adapter.moveBook(viewHolder.adapterPosition, UserBookListAdapter.MoveDirection.Up)
             } else if (direction == 8) {
-
+                adapter.moveBook(viewHolder.adapterPosition, UserBookListAdapter.MoveDirection.Down)
             }
-
-            adapter.notifyItemChanged(viewHolder.adapterPosition)
         }
 
         callback.setIsSwappable {
@@ -80,9 +79,9 @@ class UserBookList : Fragment() {
         GlobalScope.launch {
             loadBooks()
 
-            val set1 = ArrayList(books.filter { it.type == 0 })
-            val set2 = ArrayList(books.filter { it.type == 1 })
-            val set3 =  ArrayList(books.filter { it.type == 2 })
+            val set1 = ArrayList(books.filter { it.type == UserBookType.ToRead })
+            val set2 = ArrayList(books.filter { it.type == UserBookType.CurrentlyRead })
+            val set3 =  ArrayList(books.filter { it.type == UserBookType.Read })
 
             withContext(Dispatchers.Main) {
                 adapter.setData(set1, set2, set3)

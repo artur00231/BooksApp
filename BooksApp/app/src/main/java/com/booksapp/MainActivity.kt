@@ -1,12 +1,14 @@
 package com.booksapp
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.booksapp.auth.UserAuth
 import com.booksapp.databinding.ActivityMainBinding
 import com.booksapp.lists.BookList
 import com.booksapp.lists.UserBookList
@@ -29,6 +31,16 @@ class MainActivity : AppCompatActivity() {
         adapter = PagesAdapter(supportFragmentManager, lifecycle)
         binding.mainPages.adapter = adapter
         binding.mainPages.isUserInputEnabled = false
+
+        UserAuth.init(this)
+
+        /*val key = UserAuth.getInstance().getPublicKey()
+        Log.i("app_ii", "Key: $key")
+
+        val data = "HeHe"
+        val sig = UserAuth.getInstance().signData(data)
+
+        Log.i("app_ii", "Ver: ${UserAuth.getInstance().verifyData(data, sig, key)}")*/
     }
 
     public override fun onCreateOptionsMenu(menu : Menu) : Boolean {
