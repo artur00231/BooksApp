@@ -76,8 +76,9 @@ class BookList : Fragment() {
 
                 Snackbar.make(requireView(), "Added", Snackbar.LENGTH_SHORT)
                     .setAction("Undo") {
-                        //TODO implement this!!
-                        Toast.makeText(requireContext(), "This is not working", Toast.LENGTH_SHORT).show()
+                        GlobalScope.launch {
+                            removeUserBooks(book)
+                        }
                     }
                     .show()
             }
@@ -123,6 +124,19 @@ class BookList : Fragment() {
 
         if (userBook == null) {
             db.insert(UserBook(null, book, UserBookType.ToRead))
+            return true
+        }
+
+        return false;
+    }
+
+    private fun removeUserBooks(book: Book): Boolean {
+        val db = (requireContext().applicationContext as App).db!!.bookDao()
+
+        val userBook = db.getUserBook(book.id!!)
+
+        if (userBook != null) {
+            db.delete(userBook)
             return true
         }
 

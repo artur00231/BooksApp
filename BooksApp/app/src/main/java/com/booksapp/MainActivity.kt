@@ -1,5 +1,6 @@
 package com.booksapp
 
+import android.Manifest.permission.INTERNET
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -12,6 +13,8 @@ import com.booksapp.auth.UserAuth
 import com.booksapp.databinding.ActivityMainBinding
 import com.booksapp.lists.BookList
 import com.booksapp.lists.UserBookList
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,6 +44,11 @@ class MainActivity : AppCompatActivity() {
         val sig = UserAuth.getInstance().signData(data)
 
         Log.i("app_ii", "Ver: ${UserAuth.getInstance().verifyData(data, sig, key)}")*/
+
+
+        if (!EasyPermissions.hasPermissions(this, INTERNET)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.permission_internet), REQUEST_CODE_INTERNET, INTERNET)
+        }
     }
 
     public override fun onCreateOptionsMenu(menu : Menu) : Boolean {
@@ -72,5 +80,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         return false
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+
+    companion object {
+        const val REQUEST_CODE_INTERNET = 132
     }
 }

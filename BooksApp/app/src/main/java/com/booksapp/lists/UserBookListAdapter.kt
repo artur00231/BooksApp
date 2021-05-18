@@ -8,12 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
+import com.booksapp.App
 import com.booksapp.R
 import com.booksapp.data.Book
 import com.booksapp.data.UserBook
 import com.booksapp.data.UserBookType
 import com.booksapp.databinding.BookCardBinding
 import com.booksapp.databinding.BookDividerCardBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookListAdapter.ViewHolder>() {
     enum class CardType { BOOK, DIVIDER }
@@ -306,11 +311,23 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
     }
 
     private fun removeUserBook(userBook: UserBook) {
-
+        GlobalScope.launch {
+            val db = (context.applicationContext as App).db!!.bookDao()
+            withContext(Dispatchers.IO) {
+                db.delete(userBook)
+            }
+        }
     }
 
     private fun moveUserBook(userBook: UserBook, newType : UserBookType) {
+        GlobalScope.launch {
+            userBook.type = newType
 
+            val db = (context.applicationContext as App).db!!.bookDao()
+            withContext(Dispatchers.IO) {
+                db.insert(userBook)
+            }
+        }
     }
 }
 

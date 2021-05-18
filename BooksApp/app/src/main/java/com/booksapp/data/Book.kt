@@ -3,7 +3,7 @@ package com.booksapp.data
 import androidx.room.*
 
 @Entity
-data class Book(@PrimaryKey(autoGenerate = true) var id: Int?,
+data class Book(@PrimaryKey(autoGenerate = true) var id: Long?,
                 @ColumnInfo(index = true) var ISBN: String,
                 var title: String,
                 var description : String,
@@ -14,7 +14,7 @@ data class Book(@PrimaryKey(autoGenerate = true) var id: Int?,
 enum class UserBookType { ToRead, CurrentlyRead, Read }
 
 @Entity
-data class UserBook(@PrimaryKey(autoGenerate = true) var userBook_id: Int?,
+data class UserBook(@PrimaryKey(autoGenerate = true) var userBook_id: Long?,
                     @Embedded var book : Book,
                     var type : UserBookType
 )
@@ -31,13 +31,13 @@ interface BookDao {
     fun getAllUserBooksSorted(): List<UserBook>
 
     @Query("SELECT * FROM UserBook WHERE type = :type")
-    fun getUserBooks(type: Int): List<UserBook>
+    fun getUserBooks(type: Long): List<UserBook>
 
     @Query("SELECT * FROM Book WHERE id = :id")
     fun get(id: Int): Book?
 
     @Query("SELECT * FROM UserBook WHERE id = :book_id")
-    fun getUserBook(book_id: Int): UserBook?
+    fun getUserBook(book_id: Long): UserBook?
 
     @Query("SELECT * FROM Book WHERE ISBN = :ISBN")
     fun getByISBN(ISBN: String): Book?

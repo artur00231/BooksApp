@@ -15,7 +15,7 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
         FastScrollRecyclerView.SectionedAdapter{
     private var data: MutableList<Book> = arrayListOf()
     private var filteredData: MutableList<Book> = arrayListOf()
-    private var extended: HashMap<Int, Boolean> = hashMapOf()
+    private var extended: HashMap<Long, Boolean> = hashMapOf()
     private var filterData: BookListFilter.BookFilterData = BookListFilter.BookFilterData("", "")
 
     open class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

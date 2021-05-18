@@ -55,6 +55,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    compile 'com.simplecityapps:recyclerview-fastscroll:2.0.1'
-    compile 'com.getbase:floatingactionbutton:1.10.1'
+    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'com.vmadalin:easypermissions-ktx:1.0.0'
+
+    implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.1'
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
 }
