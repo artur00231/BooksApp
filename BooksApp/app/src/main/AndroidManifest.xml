@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.booksapp">
-    
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".App"
@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BooksApp">
-        <activity android:name=".lists.UserBookEdit"></activity>
+        <activity android:name=".lists.ReviewList"></activity>
+        <activity android:name=".lists.UserBookEdit" />
         <activity android:name=".lists.BookAdd" />
         <activity android:name=".MainActivity">
             <intent-filter>

@@ -33,6 +33,9 @@ interface ReviewDao {
     @Query("SELECT * FROM Review WHERE userId = :userId AND id = :bookId")
     fun findReview(userId: Int, bookId : Long): Review?
 
+    @Query("SELECT * FROM Review WHERE id = :bookId")
+    fun findReviewsForBook(bookId: Long): List<Review>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(user: User): Long
 

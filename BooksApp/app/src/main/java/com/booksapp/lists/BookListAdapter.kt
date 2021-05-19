@@ -18,14 +18,14 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
     private var extended: HashMap<Long, Boolean> = hashMapOf()
     private var filterData: BookListFilter.BookFilterData = BookListFilter.BookFilterData("", "")
 
-    open class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
-    open class ImageListViewHolder(val binding: BookListViewBinding) : ViewHolder(binding.root)
+    open class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+    open class ImageListViewHolder(val binding: BookListViewBinding, val context: Context) : ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
 
         val binding = BookListViewBinding.inflate(layoutInflater, parent, false)
-        return ImageListViewHolder(binding)
+        return ImageListViewHolder(binding, parent.context)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -81,6 +81,12 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
             binding.expandButton.visibility = View.GONE
         } else {
             binding.expandButton.visibility = View.VISIBLE
+        }
+
+        holder.view.setOnClickListener {
+            val intent = Intent(holder.context, ReviewList::class.java)
+            intent.putExtra("isbn", filteredData[position].ISBN)
+            holder.context.startActivity(intent)
         }
     }
 
