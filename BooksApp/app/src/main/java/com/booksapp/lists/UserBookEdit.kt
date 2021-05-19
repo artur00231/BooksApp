@@ -6,19 +6,22 @@ import android.os.TokenWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import com.booksapp.App
-import com.booksapp.data.Book
-import com.booksapp.data.BookDao
-import com.booksapp.data.UserBook
-import com.booksapp.data.UserBookType
+import com.booksapp.auth.UserAuth
+import com.booksapp.data.*
 import com.booksapp.databinding.ActivityUserBookEditBinding
 import kotlinx.coroutines.*
 
 class UserBookEdit : AppCompatActivity() {
     lateinit var binding : ActivityUserBookEditBinding
     lateinit var db : BookDao
+    lateinit var reviewDb : ReviewDao
     private var book : Book? = null
     private var userBook : UserBook? = null
+
+    private var review : Review? = null
+    private var reviewChanged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,9 @@ class UserBookEdit : AppCompatActivity() {
         setContentView(binding.root)
 
         db = (applicationContext as App).db!!.bookDao()
+        reviewDb = (applicationContext as App).db!!.reviewDao()
+        binding.editRating.isActivated = false
+        binding.editReview.isActivated = false
         binding.button3.isActivated = false
 
         GlobalScope.launch {
@@ -42,6 +48,8 @@ class UserBookEdit : AppCompatActivity() {
                 userBook = db.getUserBook(book!!.id!!)
             }
 
+            review = reviewDb.findReview(UserAuth.userId!!, book!!.id!!)
+
             withContext(Dispatchers.Main) {
                 if (userBook != null) {
                     when (userBook!!.type) {
@@ -51,6 +59,17 @@ class UserBookEdit : AppCompatActivity() {
                     }
                 }
                 else binding.listNone.isChecked = true
+
+                if (review != null) {
+                    binding.editRating.rating = review!!.rating
+                    binding.editReview.setText(review!!.reviewText)
+                }
+
+                binding.editReview.addTextChangedListener { reviewChanged = true }
+                binding.editRating.setOnRatingBarChangeListener { _, _, _ -> reviewChanged = true }
+
+                binding.editReview.isActivated = true
+                binding.editRating.isActivated = true
                 binding.button3.isActivated = true
             }
         }
@@ -64,7 +83,6 @@ class UserBookEdit : AppCompatActivity() {
                 if (userBook != null) {
                     db.delete(userBook!!)
                 }
-                finish()
             }
         } else {
             GlobalScope.launch {
@@ -79,8 +97,24 @@ class UserBookEdit : AppCompatActivity() {
                     userBook!!.type = type
                 }
                 db.insert(userBook!!)
-                finish()
             }
         }
+
+        if (reviewChanged) {
+            GlobalScope.launch {
+                var newReview = Review(
+                    if (review != null) {review!!.reviewId} else {null},
+                    binding.editRating.rating,
+                    binding.editReview.text.toString(),
+                    System.currentTimeMillis(),
+                    reviewDb.findUserByID(UserAuth.userId!!)!!,
+                    book!!
+                )
+
+                reviewDb.insert(newReview)
+            }
+        }
+
+        finish()
     }
 }

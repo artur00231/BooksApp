@@ -24,8 +24,8 @@ class UserAuth(private val useStrongBox: Boolean) {
         }
     }
 
-    fun signReview(rating: Float, reviewText: String): String {
-        val reviewData = "$rating|$reviewText"
+    fun signReview(rating: Float, reviewText: String, time: Long): String {
+        val reviewData = "$rating|$reviewText|$time"
 
         return signData(reviewData)
     }
@@ -34,8 +34,8 @@ class UserAuth(private val useStrongBox: Boolean) {
      * @param key is Base64 URL safe encoded public key
      * @param signature is Base64 URL safe encoded signature
      */
-    fun verifyReview(rating: Float, reviewText: String, signature: String, key: String): Boolean {
-        val reviewData = "$rating|$reviewText"
+    fun verifyReview(rating: Float, reviewText: String, time: Long, signature: String, key: String): Boolean {
+        val reviewData = "$rating|$reviewText|$time"
 
         return verifyData(reviewData, signature, key)
     }
