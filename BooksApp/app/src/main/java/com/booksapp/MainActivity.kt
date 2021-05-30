@@ -1,6 +1,8 @@
 package com.booksapp
 
 import android.Manifest.permission.INTERNET
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -37,17 +39,12 @@ class MainActivity : AppCompatActivity() {
 
         UserAuth.init(this)
 
-        /*val key = UserAuth.getInstance().getPublicKey()
-        Log.i("app_ii", "Key: $key")
-
-        val data = "HeHe"
-        val sig = UserAuth.getInstance().signData(data)
-
-        Log.i("app_ii", "Ver: ${UserAuth.getInstance().verifyData(data, sig, key)}")*/
-
-
         if (!EasyPermissions.hasPermissions(this, INTERNET)) {
             EasyPermissions.requestPermissions(this, getString(R.string.permission_internet), REQUEST_CODE_INTERNET, INTERNET)
+        }
+
+        if (!EasyPermissions.hasPermissions(this, READ_EXTERNAL_STORAGE)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.permission_read), REQUEST_CODE_READ, READ_EXTERNAL_STORAGE)
         }
     }
 
@@ -91,5 +88,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val REQUEST_CODE_INTERNET = 132
+        const val REQUEST_CODE_READ = 56
     }
 }

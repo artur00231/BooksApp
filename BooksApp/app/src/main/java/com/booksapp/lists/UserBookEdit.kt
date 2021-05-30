@@ -102,11 +102,14 @@ class UserBookEdit : AppCompatActivity() {
 
         if (reviewChanged) {
             GlobalScope.launch {
+                val time = System.currentTimeMillis()
+
                 var newReview = Review(
                     if (review != null) {review!!.reviewId} else {null},
                     binding.editRating.rating,
                     binding.editReview.text.toString(),
-                    System.currentTimeMillis(),
+                    time,
+                    UserAuth.getInstance().signReview(binding.editRating.rating, binding.editReview.text.toString(), time),
                     reviewDb.findUserByID(UserAuth.userId!!)!!,
                     book!!
                 )

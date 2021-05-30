@@ -1,5 +1,6 @@
 package com.booksapp.lists
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,11 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.booksapp.App
+import com.booksapp.LoadData
 import com.booksapp.data.Book
+import com.booksapp.data.DBPackage
 import com.booksapp.data.UserBook
 import com.booksapp.data.UserBookType
 import com.booksapp.databinding.FragmentBookListBinding
@@ -91,6 +95,14 @@ class BookList : Fragment() {
             var intent = Intent(context, BookAdd::class.java)
             startActivity(intent)
         }
+
+        binding.saveData.setOnClickListener() {
+            createFile()
+        }
+
+        binding.loadData.setOnClickListener() {
+            openFile()
+        }
     }
 
     override fun onResume() {
@@ -141,5 +153,52 @@ class BookList : Fragment() {
         }
 
         return false;
+    }
+
+    private fun createFile() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+            putExtra(Intent.EXTRA_TITLE, "data.txt")
+        }
+
+
+        startActivityForResult(intent, CREATE_FILE)
+    }
+
+    private fun openFile() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+        }
+
+
+        startActivityForResult(intent, OPEN_FILE)
+    }
+
+    override fun onActivityResult(
+        requestCode: Int, resultCode: Int, resultData: Intent?) {
+        if (requestCode == CREATE_FILE
+            && resultCode == Activity.RESULT_OK) {
+            resultData?.data?.also { uri ->
+                DBPackage(requireContext()).createDump(uri)
+            }
+        }
+
+        if (requestCode == OPEN_FILE
+            && resultCode == Activity.RESULT_OK) {
+            resultData?.data?.also { uri ->
+                val intent = Intent(requireContext(), LoadData::class.java)
+                intent.putExtra("op", LoadData.FROM_FILE)
+                intent.putExtra("uri", uri)
+
+                startActivity(intent)
+            }
+        }
+    }
+
+    companion object {
+        const val CREATE_FILE = 47
+        const val OPEN_FILE = 94
     }
 }

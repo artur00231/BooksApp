@@ -117,7 +117,7 @@ class UserAuth(private val useStrongBox: Boolean) {
 
     companion object {
         private lateinit var instance: UserAuth
-        var userId: Int? = null
+        var userId: Long? = null
 
         /**
          * For debug usage only!!

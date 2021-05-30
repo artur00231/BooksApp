@@ -4,20 +4,17 @@ import androidx.room.*
 import com.booksapp.auth.UserAuth
 
 @Entity
-data class User(@PrimaryKey(autoGenerate = true) var userId: Int?,
+data class User(@PrimaryKey(autoGenerate = true) var userId: Long?,
                     @ColumnInfo(index = true) var publicKey: String) {}
 
 @Entity
-data class Review(@PrimaryKey(autoGenerate = true) var reviewId: Int?,
+data class Review(@PrimaryKey(autoGenerate = true) var reviewId: Long?,
                     var rating: Float,
                     var reviewText: String,
                     var time: Long,
+                    var reviewSign: String,
                     @Embedded var user: User,
-                    @Embedded var book: Book) {
-
-    var reviewSign: String = UserAuth.getInstance().signReview(rating, reviewText, time)
-
-}
+                    @Embedded var book: Book) {}
 
 @Dao
 interface ReviewDao {
@@ -28,10 +25,10 @@ interface ReviewDao {
     fun findUserByKey(key: String): User?
 
     @Query("SELECT * FROM User WHERE userId = :id")
-    fun findUserByID(id: Int): User?
+    fun findUserByID(id: Long): User?
 
     @Query("SELECT * FROM Review WHERE userId = :userId AND id = :bookId")
-    fun findReview(userId: Int, bookId : Long): Review?
+    fun findReview(userId: Long, bookId : Long): Review?
 
     @Query("SELECT * FROM Review WHERE id = :bookId")
     fun findReviewsForBook(bookId: Long): List<Review>

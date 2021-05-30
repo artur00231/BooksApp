@@ -3,6 +3,7 @@
     package="com.booksapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
@@ -12,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BooksApp">
-        <activity android:name=".lists.ReviewList"></activity>
+        <activity android:name=".LoadData"></activity>
+        <activity android:name=".lists.ReviewList" />
         <activity android:name=".lists.UserBookEdit" />
         <activity android:name=".lists.BookAdd" />
         <activity android:name=".MainActivity">

@@ -5,7 +5,7 @@ import androidx.room.*
 @Entity
 data class Book(@PrimaryKey(autoGenerate = true) var id: Long?,
                 @ColumnInfo(index = true) var ISBN: String,
-                var title: String,
+                @ColumnInfo(index = true) var title: String,
                 var description : String,
                 var author : String,
                 var date : String,
@@ -35,6 +35,12 @@ interface BookDao {
 
     @Query("SELECT * FROM Book WHERE id = :id")
     fun get(id: Int): Book?
+
+    @Query("SELECT * FROM Book WHERE ISBN = :ISBN")
+    fun get(ISBN: String): List<Book>
+
+    @Query("SELECT * FROM Book WHERE title = :title")
+    fun getBooksByTitle(title: String): List<Book>
 
     @Query("SELECT * FROM UserBook WHERE id = :book_id")
     fun getUserBook(book_id: Long): UserBook?
