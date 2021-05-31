@@ -1,6 +1,7 @@
 package com.booksapp.lists
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ShareCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -102,6 +104,24 @@ class BookList : Fragment() {
 
         binding.loadData.setOnClickListener() {
             openFile()
+        }
+
+        binding.shareDataButton.setOnClickListener() {
+            GlobalScope.launch {
+                val dbPackage = DBPackage(requireContext())
+                val uri = dbPackage.createDumpToLocal()
+
+                withContext(Dispatchers.Main) {
+                    val shareIntent = ShareCompat.IntentBuilder.from(requireActivity())
+                      .setType("*/*")
+                      .addStream(uri)
+                      .createChooserIntent()
+
+                    shareIntent.flags = Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+                    startActivity(Intent.createChooser(shareIntent, "Share books with.."))
+                }
+            }
         }
     }
 
