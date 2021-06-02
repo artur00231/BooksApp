@@ -4,4 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="permission_internet">It\'s required to lookup ISBN in open library</string>
     <string name="permission_read">It\'s required to load data</string>
+
+    <string name="openLibraryUrl">https://openlibrary.org/api/books?bibkeys=ISBN:ISBNNUMBER&amp;jscmd=data&amp;format=json</string>
+    <string name="openLibrarySiteUrl">https://openlibrary.org/isbn/ISBNNUMBER</string>
 </resources>

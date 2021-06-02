@@ -10,6 +10,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.booksapp.App
+import com.booksapp.R
 import com.booksapp.data.Book
 import com.booksapp.databinding.ActivityBookAddBinding
 import kotlinx.coroutines.GlobalScope
@@ -19,7 +20,6 @@ import org.json.JSONObject
 
 class BookAdd : AppCompatActivity() {
     private lateinit var binding: ActivityBookAddBinding
-    private var openLibraryUrl = "https://openlibrary.org/api/books?bibkeys=ISBN:ISBNNUMBER&jscmd=details&format=json"
     private var requestActive = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,11 +40,9 @@ class BookAdd : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                var url = openLibraryUrl
+                var url = resources.getString(R.string.openLibraryUrl)
                 url = url.replace("ISBNNUMBER", ISBN.toString())
                 val queue = Volley.newRequestQueue(this)
-
-                Log.i("app_ii", url)
 
                 val bookRequest = StringRequest(
                     Request.Method.GET, url,
@@ -90,14 +88,14 @@ class BookAdd : AppCompatActivity() {
         }
 
         try {
-            val title = ((responseJSon["ISBN:$ISBN"] as JSONObject)["details"] as JSONObject).getString("title")
+            val title = (responseJSon["ISBN:$ISBN"] as JSONObject).getString("title")
             binding.addTitle.setText(title)
         } catch (exception: JSONException) {
             Toast.makeText(this, "Invalid ISBN", Toast.LENGTH_SHORT).show()
         }
 
         try {
-            val publishDate = ((responseJSon["ISBN:$ISBN"] as JSONObject)["details"] as JSONObject).getString("publish_date")
+            val publishDate = (responseJSon["ISBN:$ISBN"]as JSONObject).getString("publish_date")
             binding.addDate.setText(publishDate)
         } catch (exception: JSONException) {
             //Non important information
@@ -105,7 +103,7 @@ class BookAdd : AppCompatActivity() {
         }
 
         try {
-            val authorsArray = ((responseJSon["ISBN:$ISBN"] as JSONObject)["details"] as JSONObject).getJSONArray("authors")
+            val authorsArray = (responseJSon["ISBN:$ISBN"] as JSONObject).getJSONArray("authors")
             var authors = ""
 
             if (authorsArray.length() > 0) {
@@ -123,7 +121,7 @@ class BookAdd : AppCompatActivity() {
         }
 
         try {
-            var desc = ((responseJSon["ISBN:$ISBN"] as JSONObject)["details"] as JSONObject).getString("description")
+            var desc = (responseJSon["ISBN:$ISBN"] as JSONObject).getString("description")
             val descParts = desc.split("\"")
 
             if (descParts.size > 1) {
