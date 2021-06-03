@@ -86,7 +86,7 @@ class LoadData : AppCompatActivity() {
         binding.useImport.setOnClickListener {
             GlobalScope.launch {
                 val bookDD = (application as App).db!!.bookDao()
-                newBook.id = existingBook!!.id!!
+                newBook.book_id = existingBook!!.book_id!!
 
                 bookDD.insert(newBook)
 
@@ -248,7 +248,7 @@ class LoadData : AppCompatActivity() {
         GlobalScope.launch {
             if (existingBook == null) {
                 val bookDB = (application as App).db!!.bookDao()
-                newBook.id = bookDB.insert(newBook)
+                newBook.book_id = bookDB.insert(newBook)
 
                 addReviews(newBook)
             } else {
@@ -265,7 +265,7 @@ class LoadData : AppCompatActivity() {
     private fun addNewBook() {
         GlobalScope.launch {
             val bookDB = (application as App).db!!.bookDao()
-            newBook.id = bookDB.insert(newBook)
+            newBook.book_id = bookDB.insert(newBook)
 
             addReviews(newBook)
 
@@ -281,6 +281,7 @@ class LoadData : AppCompatActivity() {
             val size = newReviews.length()
 
             val reviewDB = (application as App).db!!.reviewDao()
+            val userDB = (application as App).db!!.userDao()
 
             for (i in 0 until size) {
                 try {
@@ -296,19 +297,19 @@ class LoadData : AppCompatActivity() {
                         continue
                     }
 
-                    var user = reviewDB.findUserByKey(userKey)
+                    var user = userDB.findUserByKey(userKey)
                     if (user == null) {
                         user = User(null, userKey)
-                        user.userId = reviewDB.insert(user)
+                        user.user_id = userDB.insert(user)
                     }
 
                     val review = Review(null, rating, reviewText, time, signature, user, book)
-                    val userReview = reviewDB.findReview(user.userId!!, book.id!!)
+                    val userReview = reviewDB.getReview(user, book)
 
                     if (userReview == null) {
                         reviewDB.insert(review)
                     } else if (userReview.time < time) {
-                        review.reviewId = userReview.reviewId
+                        review.review_id = userReview.review_id
                         reviewDB.insert(review)
                     }
                 } catch (exception: Throwable) {

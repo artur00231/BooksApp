@@ -95,7 +95,7 @@ class BookAdd : AppCompatActivity() {
 
     fun add(v : View) {
         binding.button.isEnabled = false;
-        var book = Book( this.book?.id,
+        var book = Book( this.book?.book_id,
             binding.addIsbnLayout.editText!!.text.toString(),
             binding.addTitle.text.toString(),
             binding.addDesc.text.toString(),
@@ -104,7 +104,11 @@ class BookAdd : AppCompatActivity() {
         )
 
         GlobalScope.launch {
-            db.insert(book);
+            if (book.book_id == null) {
+                db.insert(book);
+            } else {
+                db.update(book);
+            }
             finish()
         }
     }

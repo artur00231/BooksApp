@@ -90,9 +90,9 @@ class UserBookList : Fragment() {
     }
 
     private fun loadBooks() {
-        val db = (requireContext().applicationContext as App).db!!.bookDao()
+        val db = (requireContext().applicationContext as App).db!!.userBookDao()
 
-        books = ArrayList(db.getAllUserBooks())
+        books = ArrayList(db.getAll())
     }
 
 }

@@ -312,7 +312,7 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
 
     private fun removeUserBook(userBook: UserBook) {
         GlobalScope.launch {
-            val db = (context.applicationContext as App).db!!.bookDao()
+            val db = (context.applicationContext as App).db!!.userBookDao()
             withContext(Dispatchers.IO) {
                 db.delete(userBook)
             }
@@ -323,7 +323,7 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
         GlobalScope.launch {
             userBook.type = newType
 
-            val db = (context.applicationContext as App).db!!.bookDao()
+            val db = (context.applicationContext as App).db!!.userBookDao()
             withContext(Dispatchers.IO) {
                 db.insert(userBook)
             }

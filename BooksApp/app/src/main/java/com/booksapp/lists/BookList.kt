@@ -150,12 +150,12 @@ class BookList : Fragment() {
     }
 
     private fun addUserBooks(book: Book): Boolean {
-        val db = (requireContext().applicationContext as App).db!!.bookDao()
+        val db = (requireContext().applicationContext as App).db!!.userBookDao()
 
-        val userBook = db.getUserBook(book.id!!)
+        val userBook = db.getByBook(book)
 
         if (userBook == null) {
-            db.insert(UserBook(null, book, UserBookType.ToRead))
+            db.insert(UserBook(null, book, book.book_id, UserBookType.ToRead))
             return true
         }
 
@@ -163,9 +163,9 @@ class BookList : Fragment() {
     }
 
     private fun removeUserBooks(book: Book): Boolean {
-        val db = (requireContext().applicationContext as App).db!!.bookDao()
+        val db = (requireContext().applicationContext as App).db!!.userBookDao()
 
-        val userBook = db.getUserBook(book.id!!)
+        val userBook = db.getByBook(book)
 
         if (userBook != null) {
             db.delete(userBook)

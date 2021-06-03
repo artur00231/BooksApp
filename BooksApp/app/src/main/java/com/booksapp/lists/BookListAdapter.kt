@@ -30,7 +30,7 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val binding = (holder as ImageListViewHolder).binding
-        val bookId = filteredData[position].id!!
+        val bookId = filteredData[position].book_id!!
 
         binding.title.text = filteredData[position].title
 
@@ -43,7 +43,7 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
         }
 
         binding.expandButton.setOnClickListener {
-            val bookId = filteredData[position].id!!
+            val bookId = filteredData[position].book_id!!
             if (extended[bookId] != null && extended[bookId] == true) {
                 binding.expandButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_s)
                 binding.additionalInfo.visibility = View.GONE

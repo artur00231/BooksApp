@@ -2,8 +2,6 @@ package com.booksapp.lists
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.TokenWatcher
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
@@ -14,9 +12,11 @@ import com.booksapp.databinding.ActivityUserBookEditBinding
 import kotlinx.coroutines.*
 
 class UserBookEdit : AppCompatActivity() {
-    lateinit var binding : ActivityUserBookEditBinding
-    lateinit var db : BookDao
-    lateinit var reviewDb : ReviewDao
+    private lateinit var binding : ActivityUserBookEditBinding
+    private lateinit var bookDb : BookDao
+    private lateinit var userBookDb : UserBookDao
+    private lateinit var userDb : UserDao
+    private lateinit var reviewDb : ReviewDao
     private var book : Book? = null
     private var userBook : UserBook? = null
 
@@ -37,8 +37,10 @@ class UserBookEdit : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        db = (applicationContext as App).db!!.bookDao()
+        bookDb = (applicationContext as App).db!!.bookDao()
+        userBookDb = (applicationContext as App).db!!.userBookDao()
         reviewDb = (applicationContext as App).db!!.reviewDao()
+        userDb = (applicationContext as App).db!!.userDao()
         binding.editRating.isEnabled = false
         binding.editReview.isEnabled = false
         binding.button3.isEnabled = false
@@ -47,17 +49,17 @@ class UserBookEdit : AppCompatActivity() {
 
         GlobalScope.launch {
             val isbn = intent.getStringExtra("isbn")
-            if (isbn != null) book = db.getByISBN(isbn)
+            if (isbn != null) book = bookDb.getByISBN(isbn)
 
             if (book == null) {
                 Toast.makeText(applicationContext, "Error", Toast.LENGTH_SHORT).show()
                 finish()
             } else {
                 binding.editTitle.text = book!!.title
-                userBook = db.getUserBook(book!!.id!!)
+                userBook = userBookDb.getByBook(book!!)
             }
 
-            review = reviewDb.findReview(UserAuth.userId!!, book!!.id!!)
+            review = reviewDb.getReview(User(UserAuth.userId, ""), book!!)
 
             withContext(Dispatchers.Main) {
                 if (set) {
@@ -91,7 +93,7 @@ class UserBookEdit : AppCompatActivity() {
         if (binding.editList.checkedRadioButtonId == binding.listNone.id) {
             GlobalScope.launch {
                 if (userBook != null) {
-                    db.delete(userBook!!)
+                    userBookDb.delete(userBook!!)
                 }
             }
         } else {
@@ -102,11 +104,11 @@ class UserBookEdit : AppCompatActivity() {
                     else -> UserBookType.Read
                 }
                 if (userBook == null) {
-                    userBook = UserBook(null, book!!, type)
+                    userBook = UserBook(null, book!!, book!!.book_id, type)
                 } else {
                     userBook!!.type = type
                 }
-                db.insert(userBook!!)
+                userBookDb.insert(userBook!!)
             }
         }
 
@@ -115,12 +117,12 @@ class UserBookEdit : AppCompatActivity() {
                 val time = System.currentTimeMillis()
 
                 var newReview = Review(
-                    if (review != null) {review!!.reviewId} else {null},
+                    if (review != null) {review!!.review_id} else {null},
                     binding.editRating.rating,
                     binding.editReview.text.toString(),
                     time,
                     UserAuth.getInstance().signReview(binding.editRating.rating, binding.editReview.text.toString(), time, book!!.ISBN),
-                    reviewDb.findUserByID(UserAuth.userId!!)!!,
+                    userDb.findUserByID(UserAuth.userId!!)!!,
                     book!!
                 )
 

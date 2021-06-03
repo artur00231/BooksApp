@@ -62,7 +62,7 @@ class DBPackage(private val context: Context) {
 
             val reviewsData = JSONArray()
 
-            val reviews = reviewDB.findReviewsForBook(book.id!!)
+            val reviews = reviewDB.getReviewsForBook(book)
 
             for (review in reviews) {
                 val reviewData = JSONObject()

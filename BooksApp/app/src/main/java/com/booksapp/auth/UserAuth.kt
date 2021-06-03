@@ -135,15 +135,15 @@ class UserAuth(private val useStrongBox: Boolean) {
             instance = UserAuth(hasStrongBox(context))
 
             GlobalScope.launch {
-                val userDB = (context.applicationContext as App).db!!.reviewDao()
+                val userDB = (context.applicationContext as App).db!!.userDao()
 
                 val maybeUser = userDB.findUserByKey(instance.getPublicKey())
 
                 userId = if (maybeUser == null) {
                     userDB.insert(User(null, instance.getPublicKey()))
-                    userDB.findUserByKey(instance.getPublicKey())!!.userId
+                    userDB.findUserByKey(instance.getPublicKey())!!.user_id
                 } else {
-                    maybeUser!!.userId
+                    maybeUser!!.user_id
                 }
             }
         }

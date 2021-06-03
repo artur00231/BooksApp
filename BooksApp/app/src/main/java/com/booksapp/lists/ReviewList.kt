@@ -69,7 +69,7 @@ class ReviewList : AppCompatActivity() {
 
             GlobalScope.launch {
                 val book = (applicationContext as App).db!!.bookDao().getByISBN(isbn)
-                val reviews = (applicationContext as App).db!!.reviewDao().findReviewsForBook(book!!.id!!)
+                val reviews = (applicationContext as App).db!!.reviewDao().getReviewsForBook(book!!)
 
                 Log.d("REVIEW TEST", ""+ reviews.size)
 
