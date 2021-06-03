@@ -289,8 +289,9 @@ class LoadData : AppCompatActivity() {
                     val rating = newReviews.getJSONObject(i).getDouble("rating").toFloat()
                     val reviewText = newReviews.getJSONObject(i).getString("reviewText")
                     val time = newReviews.getJSONObject(i).getLong("time")
+                    val isbn = ""; //TODO
 
-                    if (!UserAuth.getInstance().verifyReview(rating, reviewText, time, signature, userKey)) {
+                    if (!UserAuth.getInstance().verifyReview(rating, reviewText, time, isbn, signature, userKey)) {
                         Log.i("app_ii", "invalid sig")
                         continue
                     }

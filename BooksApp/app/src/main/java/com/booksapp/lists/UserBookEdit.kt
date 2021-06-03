@@ -23,8 +23,15 @@ class UserBookEdit : AppCompatActivity() {
     private var review : Review? = null
     private var reviewChanged = false
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean("changed", reviewChanged)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        reviewChanged = savedInstanceState?.getBoolean("changed") ?: false
 
         binding = ActivityUserBookEditBinding.inflate(layoutInflater)
 
@@ -32,9 +39,11 @@ class UserBookEdit : AppCompatActivity() {
 
         db = (applicationContext as App).db!!.bookDao()
         reviewDb = (applicationContext as App).db!!.reviewDao()
-        binding.editRating.isActivated = false
-        binding.editReview.isActivated = false
-        binding.button3.isActivated = false
+        binding.editRating.isEnabled = false
+        binding.editReview.isEnabled = false
+        binding.button3.isEnabled = false
+
+        val set = savedInstanceState == null;
 
         GlobalScope.launch {
             val isbn = intent.getStringExtra("isbn")
@@ -51,33 +60,34 @@ class UserBookEdit : AppCompatActivity() {
             review = reviewDb.findReview(UserAuth.userId!!, book!!.id!!)
 
             withContext(Dispatchers.Main) {
-                if (userBook != null) {
-                    when (userBook!!.type) {
-                        UserBookType.ToRead -> binding.listToRead.isChecked = true
-                        UserBookType.CurrentlyRead -> binding.listReading.isChecked = true
-                        UserBookType.Read -> binding.listFinished.isChecked = true
-                    }
-                }
-                else binding.listNone.isChecked = true
+                if (set) {
+                    if (userBook != null) {
+                        when (userBook!!.type) {
+                            UserBookType.ToRead -> binding.listToRead.isChecked = true
+                            UserBookType.CurrentlyRead -> binding.listReading.isChecked = true
+                            UserBookType.Read -> binding.listFinished.isChecked = true
+                        }
+                    } else binding.listNone.isChecked = true
 
-                if (review != null) {
-                    binding.editRating.rating = review!!.rating
-                    binding.editReview.setText(review!!.reviewText)
+                    if (review != null) {
+                        binding.editRating.rating = review!!.rating
+                        binding.editReview.setText(review!!.reviewText)
+                    }
                 }
 
                 binding.editReview.addTextChangedListener { reviewChanged = true }
                 binding.editRating.setOnRatingBarChangeListener { _, _, _ -> reviewChanged = true }
 
-                binding.editReview.isActivated = true
-                binding.editRating.isActivated = true
-                binding.button3.isActivated = true
+                binding.editReview.isEnabled = true
+                binding.editRating.isEnabled = true
+                binding.button3.isEnabled = true
             }
         }
 
     }
 
     fun confirm(v : View) {
-        binding.button3.isActivated = false
+        binding.button3.isEnabled = false
         if (binding.editList.checkedRadioButtonId == binding.listNone.id) {
             GlobalScope.launch {
                 if (userBook != null) {
@@ -109,7 +119,7 @@ class UserBookEdit : AppCompatActivity() {
                     binding.editRating.rating,
                     binding.editReview.text.toString(),
                     time,
-                    UserAuth.getInstance().signReview(binding.editRating.rating, binding.editReview.text.toString(), time),
+                    UserAuth.getInstance().signReview(binding.editRating.rating, binding.editReview.text.toString(), time, book!!.ISBN),
                     reviewDb.findUserByID(UserAuth.userId!!)!!,
                     book!!
                 )

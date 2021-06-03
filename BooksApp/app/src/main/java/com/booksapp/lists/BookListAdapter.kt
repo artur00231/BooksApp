@@ -88,6 +88,13 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
             intent.putExtra("isbn", filteredData[position].ISBN)
             holder.context.startActivity(intent)
         }
+
+        holder.view.setOnLongClickListener {
+            val intent = Intent(holder.context, BookAdd::class.java)
+            intent.putExtra("isbn", filteredData[position].ISBN)
+            holder.context.startActivity(intent)
+            true
+        }
     }
 
     override fun getItemCount(): Int {

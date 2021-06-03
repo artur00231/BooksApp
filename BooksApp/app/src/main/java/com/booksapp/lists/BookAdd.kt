@@ -12,15 +12,20 @@ import com.android.volley.toolbox.Volley
 import com.booksapp.App
 import com.booksapp.R
 import com.booksapp.data.Book
+import com.booksapp.data.BookDao
 import com.booksapp.databinding.ActivityBookAddBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 
 class BookAdd : AppCompatActivity() {
     private lateinit var binding: ActivityBookAddBinding
     private var requestActive = false
+    private lateinit var db : BookDao
+    private var book : Book? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +33,33 @@ class BookAdd : AppCompatActivity() {
         binding = ActivityBookAddBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
+        db = (applicationContext as App).db!!.bookDao()
+        var isbn = intent.getStringExtra("isbn")
+
+        binding.button.isEnabled = false
+        binding.addIsbn.isEnabled = false
+
+        GlobalScope.launch {
+            if (isbn != null) {
+                book = db.getByISBN(isbn)
+            }
+
+            withContext(Dispatchers.Main) {
+                binding.addIsbn.isEnabled = book == null
+
+                if (book != null) {
+                    binding.button.text = "Edit"
+                    binding.addIsbn.setText(book!!.ISBN)
+                    binding.addAuthor.setText(book!!.author)
+                    binding.addDate.setText(book!!.date)
+                    binding.addTitle.setText(book!!.title)
+                    binding.addDesc.setText(book!!.description)
+                }
+
+                binding.button.isEnabled = true
+            }
+        }
 
         binding.lookup.setOnClickListener {
             //Get book information
@@ -62,8 +94,8 @@ class BookAdd : AppCompatActivity() {
     }
 
     fun add(v : View) {
-        binding.button.isActivated = false;
-        val book = Book(null,
+        binding.button.isEnabled = false;
+        var book = Book( this.book?.id,
             binding.addIsbnLayout.editText!!.text.toString(),
             binding.addTitle.text.toString(),
             binding.addDesc.text.toString(),
@@ -72,7 +104,6 @@ class BookAdd : AppCompatActivity() {
         )
 
         GlobalScope.launch {
-            val db = (applicationContext as App).db!!.bookDao()
             db.insert(book);
             finish()
         }

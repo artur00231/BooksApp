@@ -38,7 +38,7 @@ class ReviewListAdapter(private var data: List<Review>) : RecyclerView.Adapter<R
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.view.findViewById<RatingBar>(R.id.review_item_rating).apply {
-            isActivated = false
+            setIsIndicator(true)
             rating = data[position].rating
         }
 
