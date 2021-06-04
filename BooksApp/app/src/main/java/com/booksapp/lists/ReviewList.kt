@@ -58,8 +58,9 @@ class ReviewList : AppCompatActivity() {
         setContentView(R.layout.activity_review_list)
 
         var maybeIsbn = intent.getStringExtra("isbn")
+        val hasId = intent.hasExtra("id")
 
-        if (maybeIsbn == null) {
+        if (maybeIsbn == null || !hasId) {
             finish()
         } else {
             isbn = maybeIsbn
@@ -68,7 +69,7 @@ class ReviewList : AppCompatActivity() {
             rv.addItemDecoration(DividerItemDecoration(rv.context, DividerItemDecoration.VERTICAL))
 
             GlobalScope.launch {
-                val book = (applicationContext as App).db!!.bookDao().getByISBN(isbn)
+                val book = (applicationContext as App).db!!.bookDao().get(intent.getLongExtra("id", -1))
                 val reviews = (applicationContext as App).db!!.reviewDao().getReviewsForBook(book!!)
 
                 Log.d("REVIEW TEST", ""+ reviews.size)

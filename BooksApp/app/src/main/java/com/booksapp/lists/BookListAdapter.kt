@@ -89,12 +89,13 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
         holder.view.setOnClickListener {
             val intent = Intent(holder.context, ReviewList::class.java)
             intent.putExtra("isbn", filteredData[position].ISBN)
+            intent.putExtra("id", filteredData[position].book_id)
             holder.context.startActivity(intent)
         }
 
         holder.view.setOnLongClickListener {
             val intent = Intent(holder.context, BookAdd::class.java)
-            intent.putExtra("isbn", filteredData[position].ISBN)
+            intent.putExtra("id", filteredData[position].book_id!!)
             holder.context.startActivity(intent)
             true
         }

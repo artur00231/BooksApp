@@ -48,8 +48,9 @@ class UserBookEdit : AppCompatActivity() {
         val set = savedInstanceState == null;
 
         GlobalScope.launch {
-            val isbn = intent.getStringExtra("isbn")
-            if (isbn != null) book = bookDb.getByISBN(isbn)
+            val hasId = intent.hasExtra("id")
+            val id = intent.getLongExtra("id", -1)
+            if (hasId) book = bookDb.get(id)
 
             if (book == null) {
                 Toast.makeText(applicationContext, "Error", Toast.LENGTH_SHORT).show()

@@ -36,18 +36,19 @@ class BookAdd : AppCompatActivity() {
         setContentView(binding.root)
 
         db = (applicationContext as App).db!!.bookDao()
-        var isbn = intent.getStringExtra("isbn")
+        val isEdit = intent.hasExtra("id")
+        val id = intent.getLongExtra("id", -1)
 
         binding.button.isEnabled = false
-        binding.addIsbn.isEnabled = false
+        //binding.addIsbn.isEnabled = false
 
         GlobalScope.launch {
-            if (isbn != null) {
-                book = db.getByISBN(isbn)
+            if (isEdit) {
+                book = db.get(id)
             }
 
             withContext(Dispatchers.Main) {
-                binding.addIsbn.isEnabled = book == null
+                //binding.addIsbn.isEnabled = book == null
 
                 if (book != null) {
                     binding.button.text = "Edit"

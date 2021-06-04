@@ -57,7 +57,7 @@ interface BookDao {
     fun getAll(): List<Book>
 
     @Query("SELECT * FROM Book WHERE book_id = :id")
-    fun get(id: Int): Book?
+    fun get(id: Long): Book?
 
     @Query("SELECT * FROM Book WHERE ISBN = :ISBN")
     fun get(ISBN: String): List<Book>

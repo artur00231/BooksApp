@@ -72,17 +72,17 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val dataSetAndPos = getItemDataSetAndPosition(position)
 
-        val isbn = when (dataSetAndPos.first) {
-            DataSet.Dividers -> null
-            DataSet.BooksToRead -> booksToRead[dataSetAndPos.second].book.ISBN
-            DataSet.BooksRead -> booksRead[dataSetAndPos.second].book.ISBN
-            DataSet.BooksCurrentlyRead -> booksCurrentlyRead[dataSetAndPos.second].book.ISBN
+        val id = when (dataSetAndPos.first) {
+            DataSet.Dividers -> -1
+            DataSet.BooksToRead -> booksToRead[dataSetAndPos.second].book.book_id
+            DataSet.BooksRead -> booksRead[dataSetAndPos.second].book.book_id
+            DataSet.BooksCurrentlyRead -> booksCurrentlyRead[dataSetAndPos.second].book.book_id
         }
 
-        if (isbn != null) {
+        if (id != -1L) {
             (holder as BookListViewHolder).binding.root.setOnClickListener {
                 val intent = Intent(context, UserBookEdit::class.java)
-                intent.putExtra("isbn", isbn)
+                intent.putExtra("id", id)
                 context.startActivity(intent)
             }
         }
