@@ -119,6 +119,14 @@
                 android:layout_height="wrap_content"
                 android:onClick="add"
                 android:text="Add" />
+
+            <Button
+                android:id="@+id/remove_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="remove"
+                android:text="Remove"
+                android:visibility="invisible" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

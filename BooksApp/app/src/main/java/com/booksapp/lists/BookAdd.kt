@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -55,6 +56,8 @@ class BookAdd : AppCompatActivity() {
                     binding.addDate.setText(book!!.date)
                     binding.addTitle.setText(book!!.title)
                     binding.addDesc.setText(book!!.description)
+
+                    binding.removeButton.isVisible = true
                 }
 
                 binding.button.isEnabled = true
@@ -94,7 +97,9 @@ class BookAdd : AppCompatActivity() {
     }
 
     fun add(v : View) {
-        binding.button.isEnabled = false;
+        binding.button.isEnabled = false
+        binding.removeButton.isEnabled = false
+
         var book = Book( this.book?.book_id,
             binding.addIsbnLayout.editText!!.text.toString(),
             binding.addTitle.text.toString(),
@@ -109,6 +114,24 @@ class BookAdd : AppCompatActivity() {
             } else {
                 db.update(book);
             }
+            finish()
+        }
+    }
+
+    fun remove(v : View) {
+        binding.button.isEnabled = false
+        binding.removeButton.isEnabled = false
+
+        var book = Book( this.book?.book_id,
+            binding.addIsbnLayout.editText!!.text.toString(),
+            binding.addTitle.text.toString(),
+            binding.addDesc.text.toString(),
+            binding.addAuthor.text.toString(),
+            binding.addDate.text.toString()
+        )
+
+        GlobalScope.launch {
+            db.delete(book)
             finish()
         }
     }
