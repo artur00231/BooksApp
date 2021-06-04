@@ -60,6 +60,7 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
             binding.author.visibility = View.GONE
         } else {
             binding.author.visibility = View.VISIBLE
+            binding.author.text = "Authors: ${binding.author.text}"
         }
 
         binding.description.text = filteredData[position].description
@@ -67,6 +68,7 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
             binding.description.visibility = View.GONE
         } else {
             binding.description.visibility = View.VISIBLE
+            binding.description.text = "Description:\n${binding.description.text}"
         }
 
         binding.date.text = filteredData[position].date
@@ -74,6 +76,7 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
             binding.date.visibility = View.GONE
         } else {
             binding.date.visibility = View.VISIBLE
+            binding.date.text = "Date: ${binding.date.text}"
         }
 
         if (binding.author.visibility == View.GONE && binding.description.visibility == View.GONE

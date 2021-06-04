@@ -30,6 +30,10 @@ class UserBookList : Fragment() {
         super.onCreate(savedInstanceState)
 
         adapter = UserBookListAdapter(requireContext())
+
+        savedInstanceState?.let {
+            adapter.restoreFromBundle(it)
+        }
     }
 
     override fun onCreateView(
@@ -87,6 +91,11 @@ class UserBookList : Fragment() {
                 adapter.setData(set1, set2, set3)
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        adapter.saveToBundle(outState)
     }
 
     private fun loadBooks() {

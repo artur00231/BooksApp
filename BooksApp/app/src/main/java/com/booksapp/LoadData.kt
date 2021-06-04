@@ -58,6 +58,7 @@ class LoadData : AppCompatActivity() {
         binding.useImport.visibility = View.GONE
         binding.useUser.visibility = View.GONE
         binding.useBoth.visibility = View.GONE
+        binding.skip.visibility = View.GONE
 
         if (intent.getIntExtra("op", -1) == FROM_FILE) {
             uri = intent.getParcelableExtra<Uri>("uri")!!
@@ -88,7 +89,7 @@ class LoadData : AppCompatActivity() {
                 val bookDD = (application as App).db!!.bookDao()
                 newBook.book_id = existingBook!!.book_id!!
 
-                bookDD.insert(newBook)
+                bookDD.update(newBook)
 
                 addReviews(newBook)
 
@@ -97,6 +98,11 @@ class LoadData : AppCompatActivity() {
                     setupNext()
                 }
             }
+        }
+
+        binding.skip.setOnClickListener {
+            dataIndex++;
+            setupNext()
         }
     }
 
@@ -116,6 +122,7 @@ class LoadData : AppCompatActivity() {
         binding.useImport.visibility = View.GONE
         binding.useUser.visibility = View.GONE
         binding.useBoth.visibility = View.GONE
+        binding.skip.visibility = View.GONE
 
         try {
             val bookData = readJSON.getJSONArray("data").getJSONObject(dataIndex)
@@ -124,8 +131,8 @@ class LoadData : AppCompatActivity() {
             newBook = Book(null,
                 bookData.getString("ISBN"),
                 bookData.getString("title"),
-                bookData.getString("author"),
                 bookData.getString("description"),
+                bookData.getString("author"),
                 bookData.getString("date")
             )
             existingBook = null
@@ -148,6 +155,7 @@ class LoadData : AppCompatActivity() {
                         0 -> {
                             //Unique book
                             binding.addNew.visibility = View.VISIBLE
+                            binding.skip.visibility = View.VISIBLE
                         }
                         1 -> {
                             binding.useImport.visibility = View.VISIBLE
@@ -165,14 +173,20 @@ class LoadData : AppCompatActivity() {
                         else -> {
                             //Possible same book with different ISBN, but multiple books already exist, so print warning
                             binding.addNew.visibility = View.VISIBLE
+                            binding.skip.visibility = View.VISIBLE
+
+                            Toast.makeText(this@LoadData, "You already have at least two books with this title!", Toast.LENGTH_SHORT).show()
                         }
                     }
 
                 } else {
                     if (isSameBook(newBook, existingBooks[0])) {
-                        //TODO add reviews
-                        binding.addNew.visibility = View.VISIBLE
-                        existingBook = existingBooks[0]
+                        addReviews(existingBooks[0])
+                        dataIndex++;
+                        withContext(Dispatchers.Main) {
+                            setupNext()
+                        }
+
                     } else {
                         withContext(Dispatchers.Main) {
                             binding.useImport.visibility = View.VISIBLE
@@ -200,7 +214,6 @@ class LoadData : AppCompatActivity() {
     private fun loadFromUri() {
         GlobalScope.launch {
             try {
-                Log.i("app_ii", "loadFromUri")
                 val readData: ArrayList<Byte> = ArrayList()
 
                 contentResolver.openFileDescriptor(uri, "r")?.use { descriptor ->
@@ -290,7 +303,7 @@ class LoadData : AppCompatActivity() {
                     val rating = newReviews.getJSONObject(i).getDouble("rating").toFloat()
                     val reviewText = newReviews.getJSONObject(i).getString("reviewText")
                     val time = newReviews.getJSONObject(i).getLong("time")
-                    val isbn = ""; //TODO
+                    val isbn = book.ISBN
 
                     if (!UserAuth.getInstance().verifyReview(rating, reviewText, time, isbn, signature, userKey)) {
                         Log.i("app_ii", "invalid sig")
@@ -310,7 +323,7 @@ class LoadData : AppCompatActivity() {
                         reviewDB.insert(review)
                     } else if (userReview.time < time) {
                         review.review_id = userReview.review_id
-                        reviewDB.insert(review)
+                        reviewDB.update(review)
                     }
                 } catch (exception: Throwable) {
                     //Do nothing

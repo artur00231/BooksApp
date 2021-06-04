@@ -2,6 +2,8 @@ package com.booksapp.lists
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +17,7 @@ import com.booksapp.data.UserBook
 import com.booksapp.data.UserBookType
 import com.booksapp.databinding.BookCardBinding
 import com.booksapp.databinding.BookDividerCardBinding
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -25,10 +28,14 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
     enum class DataSet { BooksToRead, BooksRead,  BooksCurrentlyRead, Dividers }
     enum class MoveDirection {Up, Down}
 
+    @Parcelize
+    data class UserBookListAdapterData(var showData0: Boolean, var showData1: Boolean, var showData2: Boolean) : Parcelable
+
     private var booksToRead: UserBookListDataSet = arrayListOf()
     private var booksRead: UserBookListDataSet = arrayListOf()
     private var booksCurrentlyRead: UserBookListDataSet = arrayListOf()
     private var showDataSet : Array<Boolean> = arrayOf(true, true, true)
+    private var dividers : Array<ImageButton?> = arrayOf(null, null, null)
     private var dataSetMap : HashMap<Int, UserBookListDataSet> = hashMapOf(0 to booksToRead, 1 to booksCurrentlyRead, 2 to booksRead)
 
     open class ViewHolder(view : View) : RecyclerView.ViewHolder(view)
@@ -102,18 +109,24 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
                         binding.dividerButton.setOnClickListener {
                             flipDataSetToShow(0, binding.dividerButton)
                         }
+                        dividers[0] = binding.dividerButton
+                        setImageButton(0, binding.dividerButton)
                     }
                     1 -> {
                         binding.dividerName.text = "Books currently read"
                         binding.dividerButton.setOnClickListener {
                             flipDataSetToShow(1, binding.dividerButton)
                         }
+                        dividers[1] = binding.dividerButton
+                        setImageButton(1, binding.dividerButton)
                     }
                     2 -> {
                         binding.dividerName.text = "Books read"
                         binding.dividerButton.setOnClickListener {
                             flipDataSetToShow(2, binding.dividerButton)
                         }
+                        dividers[2] = binding.dividerButton
+                        setImageButton(2, binding.dividerButton)
                     }
                 }
             }
@@ -121,6 +134,15 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
+        if (holder is BookDividerViewHolder) {
+            val dividerHolder = holder as BookDividerViewHolder
+
+            when (dividerHolder.binding.dividerButton) {
+                dividers[0] -> dividers[0] = null
+                dividers[1] -> dividers[1] = null
+                dividers[2] -> dividers[2] = null
+            }
+        }
     }
 
     override fun getItemCount(): Int {
@@ -136,6 +158,19 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
         dataSetMap = hashMapOf(0 to booksToRead, 1 to booksCurrentlyRead, 2 to booksRead)
     }
 
+    fun saveToBundle(bundle: Bundle) {
+        bundle.putParcelable("UserBookListAdapterData", UserBookListAdapterData(showDataSet[0], showDataSet[1], showDataSet[2]))
+    }
+
+    fun restoreFromBundle(bundle: Bundle) {
+        bundle.getParcelable<UserBookListAdapterData>("UserBookListAdapterData")?.let {
+            showDataSet[0] = it.showData0
+            showDataSet[1] = it.showData1
+            showDataSet[2] = it.showData2
+
+            notifyDataSetChanged()
+        }
+    }
     /**
      * @return 0 - no action; 1 - only move up; 2 - only move down; 3 - move down or up;
      */
@@ -211,7 +246,7 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
 
             val newPosition = booksRead.indexOf(book)
             if (showDataSet[2]) {
-                notifyItemInserted(newPosition + getDataSetOffset(DataSet.BooksToRead))
+                notifyItemInserted(newPosition + getDataSetOffset(DataSet.BooksRead))
             }
 
             moveUserBook(book, UserBookType.Read)
@@ -301,12 +336,19 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
     private fun flipDataSetToShow(dataSet : Int, button : ImageButton) {
         showDataSet[dataSet] = !showDataSet[dataSet]
 
+        setImageButton(dataSet, button)
         if (showDataSet[dataSet]) {
-            button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up)
             notifyItemRangeInserted(getDividerPosition(dataSet) + 1, dataSetMap[dataSet]!!.size)
         } else {
-            button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down)
             notifyItemRangeRemoved(getDividerPosition(dataSet) + 1, dataSetMap[dataSet]!!.size)
+        }
+    }
+
+    private fun setImageButton(dataSet : Int, button : ImageButton) {
+        if (showDataSet[dataSet]) {
+            button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up)
+        } else {
+            button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down)
         }
     }
 
@@ -325,7 +367,7 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
 
             val db = (context.applicationContext as App).db!!.userBookDao()
             withContext(Dispatchers.IO) {
-                db.insert(userBook)
+                db.update(userBook)
             }
         }
     }

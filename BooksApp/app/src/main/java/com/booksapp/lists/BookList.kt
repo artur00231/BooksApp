@@ -3,6 +3,7 @@ package com.booksapp.lists
 import android.app.Activity
 import android.content.ClipData
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -37,6 +38,8 @@ class BookList : Fragment() {
     private var bookList: ArrayList<Book> = arrayListOf()
     private var adapter: BookListAdapter = BookListAdapter()
 
+    private var lastSnackbar: Snackbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -46,11 +49,22 @@ class BookList : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBookListBinding.inflate(inflater, container, false);
-        return binding.root;
+
+        savedInstanceState?.let { bundle ->
+            bundle.getParcelable<BookListFilter.BookFilterData>("filter")?.let {
+                filterData = it
+            }
+        }
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            binding.rightLabels
+        }
 
         binding.filterBooks.setOnClickListener {
             BookListFilter.newInstance(filterData).setCallback { filterData = it; applyFilter() }
@@ -73,20 +87,29 @@ class BookList : Fragment() {
                         success = addUserBooks(book)
                     }
 
-                    if (!success) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(requireContext(), "This book is already added", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        if (!success) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "This book is already added",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            lastSnackbar?.dismiss()
+
+                            lastSnackbar = Snackbar.make(requireView(), "Added", Snackbar.LENGTH_SHORT)
+                                .setAction("Undo") {
+                                    GlobalScope.launch {
+                                        removeUserBooks(book)
+                                    }
+                                }
+                            lastSnackbar!!.show()
+
                         }
                     }
                 }
-
-                Snackbar.make(requireView(), "Added", Snackbar.LENGTH_SHORT)
-                    .setAction("Undo") {
-                        GlobalScope.launch {
-                            removeUserBooks(book)
-                        }
-                    }
-                    .show()
             }
         }
 
@@ -127,6 +150,7 @@ class BookList : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        lastSnackbar = null
 
         GlobalScope.launch {
             loadBooks()
@@ -137,6 +161,18 @@ class BookList : Fragment() {
                 applyFilter()
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        lastSnackbar?.dismiss()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putParcelable("filter", filterData)
     }
 
     private fun applyFilter() {
