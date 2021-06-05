@@ -27,14 +27,14 @@
                 app2:layout_constraintStart_toStartOf="parent"
                 app2:layout_constraintTop_toTopOf="parent" />
 
-            <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
-                android:id="@+id/book_list"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app2:layout_constraintBottom_toBottomOf="parent"
-                app2:layout_constraintEnd_toEndOf="parent"
-                app2:layout_constraintStart_toStartOf="parent"
-                app2:layout_constraintTop_toBottomOf="@+id/filter_books" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/book_list"
+                    android:layout_width="0dp"
+                    app2:layout_constraintBottom_toBottomOf="parent"
+                    app2:layout_constraintEnd_toEndOf="parent"
+                    app2:layout_constraintStart_toStartOf="parent"
+                    app2:layout_constraintTop_toBottomOf="@+id/filter_books"
+                    android:layout_height="0dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.getbase.floatingactionbutton.FloatingActionsMenu

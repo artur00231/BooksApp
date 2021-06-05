@@ -311,7 +311,7 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
             }
             DataSet.BooksRead -> {
                 var offset = 3 + (if (showDataSet[0]) booksToRead.size else 0)
-                offset += (if (showDataSet[1]) booksToRead.size else 0)
+                offset += (if (showDataSet[1]) booksCurrentlyRead.size else 0)
                 if (showDataSet[1]) offset else -1
             }
             DataSet.Dividers -> {
@@ -327,7 +327,7 @@ class UserBookListAdapter(val context: Context) : RecyclerView.Adapter<UserBookL
                 1 + (if (showDataSet[0]) booksToRead.size else 0)
             }
             2 -> {
-                2 + (if (showDataSet[0]) booksToRead.size else 0) + (if (showDataSet[1]) booksToRead.size else 0)
+                2 + (if (showDataSet[0]) booksToRead.size else 0) + (if (showDataSet[1]) booksCurrentlyRead.size else 0)
             }
             else -> -1
         }

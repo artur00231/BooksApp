@@ -30,6 +30,7 @@ class UserBookList : Fragment() {
         super.onCreate(savedInstanceState)
 
         adapter = UserBookListAdapter(requireContext())
+        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT
 
         savedInstanceState?.let {
             adapter.restoreFromBundle(it)
@@ -89,6 +90,7 @@ class UserBookList : Fragment() {
 
             withContext(Dispatchers.Main) {
                 adapter.setData(set1, set2, set3)
+                adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
             }
         }
     }

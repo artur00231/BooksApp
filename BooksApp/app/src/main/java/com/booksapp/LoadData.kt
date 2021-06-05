@@ -154,28 +154,38 @@ class LoadData : AppCompatActivity() {
                     when (existingBooks.size) {
                         0 -> {
                             //Unique book
-                            binding.addNew.visibility = View.VISIBLE
-                            binding.skip.visibility = View.VISIBLE
+                            withContext(Dispatchers.Main) {
+                                binding.addNew.visibility = View.VISIBLE
+                                binding.skip.visibility = View.VISIBLE
+                            }
                         }
                         1 -> {
-                            binding.useImport.visibility = View.VISIBLE
-                            binding.useUser.visibility = View.VISIBLE
-                            binding.useBoth.visibility = View.VISIBLE
+                            withContext(Dispatchers.Main) {
+                                binding.useImport.visibility = View.VISIBLE
+                                binding.useUser.visibility = View.VISIBLE
+                                binding.useBoth.visibility = View.VISIBLE
 
-                            binding.loadL.visibility = View.VISIBLE
-                            existingBook = existingBooks[0]
-                            binding.ISBNLayout1.editText!!.setText(existingBooks[0].ISBN)
-                            binding.titleLayout1.editText!!.setText(existingBooks[0].title)
-                            binding.authorLayout1.editText!!.setText(existingBooks[0].author)
-                            binding.descLayout1.editText!!.setText(existingBooks[0].description)
-                            binding.dateLayout1.editText!!.setText(existingBooks[0].date)
+                                binding.loadL.visibility = View.VISIBLE
+                                existingBook = existingBooks[0]
+                                binding.ISBNLayout1.editText!!.setText(existingBooks[0].ISBN)
+                                binding.titleLayout1.editText!!.setText(existingBooks[0].title)
+                                binding.authorLayout1.editText!!.setText(existingBooks[0].author)
+                                binding.descLayout1.editText!!.setText(existingBooks[0].description)
+                                binding.dateLayout1.editText!!.setText(existingBooks[0].date)
+                            }
                         }
                         else -> {
                             //Possible same book with different ISBN, but multiple books already exist, so print warning
-                            binding.addNew.visibility = View.VISIBLE
-                            binding.skip.visibility = View.VISIBLE
+                            withContext(Dispatchers.Main) {
+                                binding.addNew.visibility = View.VISIBLE
+                                binding.skip.visibility = View.VISIBLE
 
-                            Toast.makeText(this@LoadData, "You already have at least two books with this title!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@LoadData,
+                                    "You already have at least two books with this title!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
 

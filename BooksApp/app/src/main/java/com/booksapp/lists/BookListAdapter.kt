@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.booksapp.R
 import com.booksapp.data.Book
 import com.booksapp.databinding.BookListViewBinding
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
+import me.zhanghai.android.fastscroll.PopupTextProvider
 
 class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
-        FastScrollRecyclerView.SectionedAdapter{
+    PopupTextProvider {
     private var data: MutableList<Book> = arrayListOf()
     private var filteredData: MutableList<Book> = arrayListOf()
     private var extended: HashMap<Long, Boolean> = hashMapOf()
@@ -128,10 +128,6 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
         return null
     }
 
-    override fun getSectionName(position: Int): String {
-        return filteredData[position].title[0].toString()
-    }
-
     private fun filter() {
         filteredData = ArrayList(data)
 
@@ -144,5 +140,9 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.ViewHolder>(),
         }
 
         notifyDataSetChanged()
+    }
+
+    override fun getPopupText(position: Int): String {
+        return filteredData[position].title[0].toString().toUpperCase()
     }
 }

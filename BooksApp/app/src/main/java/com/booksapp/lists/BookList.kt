@@ -1,17 +1,14 @@
 package com.booksapp.lists
 
 import android.app.Activity
-import android.content.ClipData
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 
 
 class BookList : Fragment() {
@@ -36,13 +34,9 @@ class BookList : Fragment() {
     private var filterData: BookListFilter.BookFilterData = BookListFilter.BookFilterData("", "")
 
     private var bookList: ArrayList<Book> = arrayListOf()
-    private var adapter: BookListAdapter = BookListAdapter()
+    private var adapter: BookListAdapter = BookListAdapter().apply { stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT }
 
     private var lastSnackbar: Snackbar? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,7 +68,7 @@ class BookList : Fragment() {
         binding.bookList.adapter = adapter
         binding.bookList.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
 
-        val callback = CustomItemTouchHelperCallback(context!!)
+        val callback = CustomItemTouchHelperCallback(requireContext())
         callback.setOnSwipeListener { viewHolder: RecyclerView.ViewHolder, direction: Int ->
             if (direction == 4) {
                 var book = adapter.getBookFromPosition(viewHolder.adapterPosition)!!
@@ -116,20 +110,24 @@ class BookList : Fragment() {
         val helper = ItemTouchHelper(callback)
         helper.attachToRecyclerView(binding.bookList)
 
-        binding.addBookButton.setOnClickListener() {
+        binding.addBookButton.setOnClickListener {
+            binding.rightLabels.collapse()
             var intent = Intent(context, BookAdd::class.java)
             startActivity(intent)
         }
 
-        binding.saveData.setOnClickListener() {
+        binding.saveData.setOnClickListener {
+            binding.rightLabels.collapse()
             createFile()
         }
 
-        binding.loadData.setOnClickListener() {
+        binding.loadData.setOnClickListener {
+            binding.rightLabels.collapse()
             openFile()
         }
 
-        binding.shareDataButton.setOnClickListener() {
+        binding.shareDataButton.setOnClickListener {
+            binding.rightLabels.collapse()
             GlobalScope.launch {
                 val dbPackage = DBPackage(requireContext())
                 val uri = dbPackage.createDumpToLocal()
@@ -159,6 +157,7 @@ class BookList : Fragment() {
             withContext(Dispatchers.Main) {
                 adapter.setData(bookList)
                 applyFilter()
+                adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
             }
         }
     }
@@ -166,6 +165,7 @@ class BookList : Fragment() {
     override fun onPause() {
         super.onPause()
 
+        binding.rightLabels.collapse()
         lastSnackbar?.dismiss()
     }
 
